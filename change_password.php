@@ -1,6 +1,6 @@
 <?php
 session_start();
-require 'connect.php'; // DB connection
+require 'connect.php'; 
 include 'nav.php';
 
 $errors = '';

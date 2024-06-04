@@ -1,0 +1,137 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    /* padding: 20px; */
+    background-color: #fff;
+    box-sizing: border-box;
+}
+
+.padding-40 {
+    padding: 40px;
+}
+
+.container {
+    /* max-width: 800px; */
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 5px;
+    /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
+}
+
+.invoice-header, .invoice-details, .invoice-summary, .invoice-actions {
+    margin-bottom: 20px;
+}
+
+.invoice-header h1 {
+    margin-bottom: 20px;
+}
+
+.invoice-header div, .invoice-summary div {
+    margin-bottom: 10px;
+}
+
+.invoice-header label, .invoice-summary label {
+    display: inline-block;
+    width: 100px;
+}
+
+.invoice-header input, .invoice-header select, .invoice-summary input {
+    padding: 5px;
+    width: calc(100% - 110px);
+}
+
+.invoice-details table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+.invoice-details th, .invoice-details td {
+    border: 1px solid #dddddd;
+    padding: 0px;
+    text-align: left;
+}
+
+.invoice-details th {
+	padding: 4px 8px;
+}
+
+.invoice-actions button {
+    padding: 10px 20px;
+    margin-left: 10px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.invoice-actions button:hover {
+    background-color: #0056b3;
+}
+
+.price, .qty {
+	width: 50px;
+}
+
+.product_autocomplete {
+	position: relative;
+}
+
+.product_autocomplete_list {
+	position: absolute;
+	z-index: 1;
+	margin: 0px;
+	padding: 0px;
+	list-style-type: none;
+	list-style: none;
+	user-select: none;
+	-moz-user-select: none;
+	--webkit-user-select: none;
+	font-size: 14px;
+}
+
+.product_autocomplete_list li {
+	border: solid 1px #afafaf;
+	padding: 5px 10px;
+	background-color: #fff;
+}
+
+.product_autocomplete_list li:hover {
+	background-color: #efefef;
+}
+
+.product_autocomplete_list li:active {
+	background-color: #258de8;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-center {
+    justify-content: center;
+    align-items: center;
+}
+
+#invoice_table input {
+    width: 100%;
+    border: none;
+}
+
+.align-right {
+     text-align: right;
+}
+
+.align-center {
+    text-align: center !important;
+}
+
+.margin-bottom-5 {
+    margin-bottom: 5px;
+}
+
+select {
+    height: 30px;
+}

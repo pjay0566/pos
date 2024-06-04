@@ -1,0 +1,130 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+#home {
+    background: lightblue;
+}
+
+#about {
+    background: lightgreen;
+}
+
+#services {
+    background: lightcoral;
+}
+
+#contact {
+    background: lightgoldenrodyellow;
+}
+
+/* Navbar Styles */
+.navbar {
+    position: fixed !important;
+    top: 0;
+    width: 100%;
+    height: 50px;
+    background: #444;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline !important;
+    padding: 10px 20px;
+    z-index: 10;
+}
+
+.leftnavbar {
+    display: flex;
+    justify-content: flex-start;
+    align-items: baseline;
+}
+
+.rightnavbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: baseline;
+}
+
+.navbar .logo {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.navbar .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+.navbar .nav-links li {
+    padding: 5px 10px;
+}
+
+.navbar .nav-links li a {
+    color: white;
+    text-decoration: none;
+}
+
+.navbar .logout-icon a {
+    font-size: 1.2em;
+}
+
+.burger {
+    display: none;
+    cursor: pointer;
+}
+
+.burger div {
+    width: 25px;
+    height: 3px;
+    background: white;
+    margin: 5px;
+    transition: all 0.3s ease;
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 768px) {
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        background: #333;
+    }
+
+    .nav-links li {
+        text-align: center;
+        padding: 10px;
+        width: 100%;
+    }
+
+    .nav-links li a {
+        width: 100%;
+        display: block;
+    }
+
+    .burger {
+        display: block;
+    }
+
+    .nav-links.nav-active {
+        display: flex;
+    }
+
+    .burger.toggle .line1 {
+        transform: rotate(-45deg) translate(-5px, 6px);
+    }
+
+    .burger.toggle .line2 {
+        opacity: 0;
+    }
+
+    .burger.toggle .line3 {
+        transform: rotate(45deg) translate(-5px, -6px);
+    }
+}

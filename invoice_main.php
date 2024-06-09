@@ -1,69 +1,83 @@
 <?php
 session_start();
 include 'nav.php';
+include 'invoice_class.php';
+require 'config.php';
+include 'format_invoice_no.php';
 
-// include'config.php';
-// Database connection details
 $host = 'localhosT';
 $dbname = 'pos';
 $username = 'root';
 $password = '';
 $current_date = date('Y-m-d H:i:s');
+$iinvoice_no = 0;
+$retno = 0;
+$class = '';
+$retclass = '';
+$addclass = 'hide';
+$results = [];
+$i = 0;
 
-echo $_SERVER['QUERY_STRING'];
+if (isset($_GET['iinvoice_no']) && !empty($_SERVER['QUERY_STRING'])) {
+    $iinvoice_no = $_GET['iinvoice_no'];
+    if ($iinvoice_no > 0) { // edit mode
+        $class = 'hide';
+        $addclass = '';
+        $retclass = 'hide';
 
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Could not connect to the database: " . $e->getMessage());
-}
+        //get invoice header and details in single query
+        $sql = "SELECT * FROM invoice_header WHERE iinvoice_no = $iinvoice_no;";
+        $sql .= "SELECT * FROM invoice_detail WHERE iinvoice_no = $iinvoice_no;";
 
-// Function to generate the next invoice number
-function generateInvoiceNumber($pdo, $prefix, $maxLength)
-{
-    // Fetch the last invoice number
-    $stmt = $pdo->query("SELECT iinvoice_no FROM invoice_header ORDER BY iinvoice_no DESC LIMIT 1");
-    $lastInvoice = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($lastInvoice) {
-        $lastInvoiceNumber = $lastInvoice['iinvoice_no'];
-        // Remove the prefix and increment the number
-        $lastNumber = (int) str_replace($prefix, '', $lastInvoiceNumber);
-        $nextNumber = $lastNumber + 1;
-    } else {
-        // No previous invoice number, start with 1
-        $nextNumber = 1;
+        if ($conn->multi_query($sql)) {
+            do {
+                if ($result = $conn->store_result()) {
+                    $results[$i] = [];
+                    while ($row = $result->fetch_assoc()) {
+                        $results[$i][] = $row;
+                    }
+                    $result->free_result();
+                    $i++;
+                }
+            } while ($conn->more_results() && $conn->next_result());
+        }
     }
+} else if (isset($_GET['ret'])) {
+    $iinvoice_no = $_GET['ret'];
+    $retno =  $_GET['ret'];
+    if ($iinvoice_no > 0) { // edit mode
+        $class = '';
+        $addclass = 'hide';
+        $retclass = 'hide';
+        //get invoice header and details in single query
+        $sql = "SELECT * FROM invoice WHERE iinvoice_no = $iinvoice_no;";
+        $sql .= "SELECT * FROM invoice_de WHERE iinvoice_no = $iinvoice_no;";
 
-    // Format the next invoice number with the prefix and ensure it is less than 5 digits
-    $nextInvoiceNumber = $prefix . str_pad($nextNumber, $maxLength - strlen($prefix), '0', STR_PAD_LEFT);
-
-    // Ensure the total length is less than or equal to maxLength
-    if (strlen($nextInvoiceNumber) > $maxLength) {
-        throw new Exception("Generated invoice number exceeds the maximum length");
+        if ($conn->multi_query($sql)) {
+            do {
+                if ($result = $conn->store_result()) {
+                    $results[$i] = [];
+                    while ($row = $result->fetch_assoc()) {
+                        $results[$i][] = $row;
+                    }
+                    $result->free_result();
+                    $i++;
+                }
+            } while ($conn->more_results() && $conn->next_result());
+        }
     }
-
-    return $nextInvoiceNumber;
 }
-
-// Usage example
-try {
-    $prefix = 'INV'; // Define your prefix here
-    $maxLength = 6; // Total length of the invoice number including the prefix
-
-    $newInvoiceNumber = generateInvoiceNumber($pdo, $prefix, $maxLength);
-
-} catch (Exception $e) {
-    echo "Error: " . $e->getMessage();
+// $conn->close();
+// Separate the results into users and orders
+$invoiceHeader = InvoiceHeader::fromArray(isset($results[0]) ? $results[0][0] : []);
+$invoiceDetails = [];
+$i = 0;
+if ($results && $results[1]) {
+    foreach ($results[1] as $detail) {
+        $invoiceDetails[$i] = InvoiceDetail::fromArray($detail);
+        $i++;
+    }
 }
-
-
-// Get a new invoice number
-
-// Close the connection
-
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -79,39 +93,31 @@ try {
 </head>
 
 <body>
+    <!-- <?php echo $invoiceHeader->iinvoice_no; ?><br>
+    <?php foreach ($invoiceDetails as $detail) {
+        echo $detail->product_name . '<br>';
+    } ?> -->
     <div class="row">
-        <div class="col-md-9 padding-40">
+        <div class="col-md-8 left-section pt20 pr40 pb20 pl40" style="border-right: solid 1px #adadad;">
             <div class="invoice-header">
                 <div style="display: flex; justify-content: space-between;">
                     <h3 style="margin-bottom: 50px">INVOICE NEW</h3>
                     <div>
-                        <div class="align-right"><strong>Counter:</strong>&nbsp;<?php echo $_SESSION['counter_number']; ?></div>
-                        <div class="align-right"><?php echo $current_date; ?></div>
+                        <div class="align-right <?php echo $addclass; ?>">
+                            <strong>Counter:</strong>&nbsp;<?php echo $invoiceHeader->icounter; ?>
+                        </div>
+                        <div class="align-right <?php echo $class; ?>">
+                            <strong>Counter:</strong>&nbsp;<?php echo $_SESSION['counter_number']; ?>
+                        </div>
+                        <div class="align-right <?php echo $addclass; ?>"><?php echo $invoiceHeader->create_date; ?>
+                        </div>
+                        <div class="align-right <?php echo $class; ?>"><?php echo $current_date; ?></div>
                     </div>
                 </div>
-                <!-- <div class="col-md-2">
-                    Invoice No: <input type="text" id="invoice_no" name="invoice_no"
-                        value="<?php echo $newInvoiceNumber; ?>" readonly>
-                </div> -->
-                <!-- <div>
-                        <label for="date">Date:</label>
-                    <input type="date" id="date" name="create_date">
-                </div>
-                <div>
-                    <label for="customer_name">Customer Name:</label>
-                    <input type="text" id="customer_name" name="customer_name">
-                </div>
-                <div>
-                    <label for="counter_no">Counter No:</label>
-                    <select id="counter_no" name="counter_number">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                    </select>
-                </div> -->
             </div>
             <div class="invoice-details">
-                <h5>ITEMS</h5>
+                <input type="hidden" id="stand" class="stand" name="stand[]" value="<?= $retno; ?>">
+                <!-- <h5>ITEMS</h5> -->
                 <table id="invoice_table">
                     <thead>
                         <tr>
@@ -120,69 +126,166 @@ try {
                             <th>Qty</th>
                             <th>Price</th>
                             <th>Total Price</th>
-                            <th>Actions</th>
+                            <th class="align-center <?php echo $class; ?>">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td style="text-align: center">
-                                1 
-                            </td>
-                            <td class="product_autocomplete">
-                                <input type="text" class="product_name" name="product_name[]"
-                                    onkeyup="setupAutocomplete(this)">
-                                <ul class="product_autocomplete_list"></ul>
-                            </td>
-                            <td><input type="number" class="qty" onkeyup="calculateProductTotal(this)" name="qty[]"
-                                    min="1" value="1"></td>
-                            <td><input type="number" class="price" onkeyup="calculateProductTotal(this)" name="price[]">
-                            </td>
-                            <td><input type="number" class="totalprice" name="totalprice[]" readonly></td>
-                            <td class="align-center">
-                                <button class="delete btn btn-danger btn-sm"><i
-                                        class="fa-solid fa-trash-can"></i></button>
-                            </td>
-                        </tr>
+                        <?php
+                        if ($results && $results[1]) {
+                            foreach ($invoiceDetails as $key => $detail) {
+                                ?>
+                                <tr>
+                                    <td style="text-align: center">
+                                        <?php echo $key + 1; ?>
+                                    </td>
+                                    
+                                    <td class="product_autocomplete">
+                                        <input type="text" class="product_name" name="product_name[]" autocomplete="off"
+                                            data-iproduct_identity="<?php echo $detail->iproduct_identity; ?>"
+                                            onkeyup="setupAutocomplete(this)" onblur="setProductOnBlur(this)" value="<?php echo $detail->product_name; ?>">
+                                        <ul class="product_autocomplete_list"></ul>
+                                    </td>
+                                    <td><input type="number" class="qty" onkeyup="calculateProductTotal(this)" name="qty[]"
+                                            min="1" value="<?php echo $detail->quantity; ?>"></td>
+                                    <td><input type="number" class="price" onkeyup="calculateProductTotal(this)" name="price[]"
+                                            value="<?php echo $detail->price; ?>">
+                                    </td>
+                                    <td><input type="number" class="totalprice" name="totalprice[]" readonly
+                                            value="<?php echo $detail->amount; ?>"></td>
+                                    <td class="align-center <?php echo $class; ?>">
+                                        <button class="delete btn btn-danger btn-sm"><i
+                                                class="fa-solid fa-trash-can"></i></button>
+                                    </td>
+                                </tr>
+                                <?php
+                            }
+                        } else { 
+                            for ($i = 1; $i < 6; ++$i) { ?>     
+                            <tr>
+                                <td style="text-align: center">
+                                    <?=$i?>
+                                </td>
+                                
+                                <td class="product_autocomplete">
+                                    <input type="text" class="product_name" name="product_name[]" autocomplete="off"
+                                        onkeyup="setupAutocomplete(this)"  onblur="setProductOnBlur(this)">
+                                    <ul class="product_autocomplete_list"></ul>
+                                </td>
+                                <td><input type="number" class="qty" onkeyup="calculateProductTotal(this)" name="qty[]"
+                                        min="1" value="1"></td>
+                                <td><input type="number" class="price" onkeyup="calculateProductTotal(this)" name="price[]">
+                                </td>
+                                <td><input type="number" class="totalprice" name="totalprice[]" readonly></td>
+                                <td class="align-center <?php echo $class; ?>">
+                                    <button class="delete btn btn-danger btn-sm"><i
+                                            class="fa-solid fa-trash-can"></i></button>
+                                </td>
+                            </tr>
+                        <?php }} ?>
+
                     </tbody>
                 </table>
             </div>
             <div class="row">
-                <div class="col-md-7">
-                    <div class="invoice-actions">
+                <div class="col-md-6" style="display: flex; flex-direction: column;">
+                    <div class="invoice-actions <?php echo $class; ?>">
                         <button id="add_row" style="width: 100%; margin: 10px 0px;">Add New Row</button>
                     </div>
+                    <div class="invoice-actions"
+                        style="display: flex;justify-content: flex-start;align-items: flex-end;flex-grow: 1;margin-bottom: 20px;">
+                        <button id="back">Back</button>
+                    </div>
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-6">
                     <div class="row margin-bottom-5">
                         <div class="col-md-6 align-right">Subtotal:</div>
-                        <div class="col-md-6"><input type="text" id="subtotal" name="subtotal" readonly></div>
+                        <div class="col-md-6"><input type="text" id="subtotal" name="subtotal" readonly
+                                value="<?php echo $invoiceHeader->subtotal; ?>"></div>
                     </div>
                     <div class="row margin-bottom-5">
                         <div class="col-md-6 align-right">Tax (GST):</div>
-                        <div class="col-md-6"><input type="text" id="tax" name="tax" readonly></div>
+                        <div class="col-md-6"><input type="text" id="tax" name="tax" readonly
+                                value="<?php echo $invoiceHeader->tax; ?>"></div>
                     </div>
                     <div class="row margin-bottom-5">
                         <div class="col-md-6 align-right">Total:</div>
-                        <div class="col-md-6"><input type="text" id="total" name="total" readonly></div>
+                        <div class="col-md-6"><input type="text" id="total" name="total" readonly
+                                value="<?php echo $invoiceHeader->total; ?>"></div>
                     </div>
                     <div class="row margin-bottom-5">
                         <div class="col-md-6 align-right">Payment Method:</div>
-                        <div class="col-md-6"><select name="payment_method" id="payment_method">
-                                <option>Cash</option>
-                                <option>Credit_card</option>
-                                <option>Debit_card</option>
+                        <div class="col-md-6">
+                            <select name="payment_method" id="payment_method">
+                                <option <?php echo $invoiceHeader->payment_method == 'Cash' ? 'selected' : ''; ?>>Cash
+                                </option>
+                                <option <?php echo $invoiceHeader->payment_method == 'Credit_card' ? 'selected' : ''; ?>>
+                                    Credit_card</option>
+                                <option <?php echo $invoiceHeader->payment_method == 'Debit_card' ? 'selected' : ''; ?>>
+                                    Debit_card</option>
                             </select>
                         </div>
                     </div>
-                    <div class="invoice-actions align-right" style="margin-top: 20px">
-                        <button id="save">Save</button>
-                        <button id="print">Save & Print</button>
+                    <div class="invoice-actions align-right" style="margin-top: 20px;">
+                        <button id="save" class="<?php echo $class; ?>">Save</button>
+                        <button id="savenprint" class="<?php echo $class; ?>">Save & Print</button>
+                        <button id="hold" class="<?php echo $retclass; ?>">Hold</button>
+                        <button id="print" class="<?php echo $addclass; ?>">Print</button>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 padding-40">
+        <div class="col-md-2  pt20 pr20 pb20 pl20" style="border-right: solid 1px #adadad;">
+            STAND BY INVOICES
+            <?php
+            $sql = "SELECT * FROM invoice";
+            $result = $conn->query($sql);
+
+            if ($result->num_rows > 0) {
+                // Output data of each row
+                while ($row = $result->fetch_assoc()) {
+                    ?>
+                    <a style="text-decoration: none" href="invoice_main.php?ret=<?= $row['iinvoice_no']; ?>">
+                        <div class="invoice-card <?= $retno == $row['iinvoice_no'] ? 'active' : ''; ?>">
+                            <div class="invoice-card-title">
+                                <strong><?= getFormattedInvoiceNo($row['iinvoice_no']); ?></strong>
+                                <div class="counter">Counter:<strong><?= $row['icounter']; ?></strong></div>
+                            </div>
+                            <div class="invoice-card-content">
+                                Total: <strong><?= $row['total']; ?></strong>
+                            </div>
+                        </div>
+                    </a>
+                    <?php
+                }
+            }
+            ?>
+        </div>
+        <div class="col-md-2 pt20 pr20 pb20 pl20">
             RECENT INVOICES
+            <div class="right-section">
+                <?php
+            $sql = "SELECT * FROM invoice_header WHERE create_date >= NOW() - INTERVAL 1 DAY";
+            $result = $conn->query($sql);
+            
+            if ($result->num_rows > 0) {
+                // Output data of each row
+                while ($row = $result->fetch_assoc()) {
+                    ?>
+                    <a style="text-decoration: none" href="invoice_main.php?iinvoice_no=<?= $row['iinvoice_no']; ?>">
+                        <div class="invoice-card <?= $iinvoice_no == $row['iinvoice_no'] ? 'active' : ''; ?>">
+                            <div class="invoice-card-title">
+                                <strong><?= getFormattedInvoiceNo($row['iinvoice_no']); ?></strong>
+                                <div class="counter">Counter:<strong><?= $row['icounter']; ?></strong></div>
+                            </div>
+                            <div class="invoice-card-content">
+                                Total: <strong><?= $row['total']; ?></strong>
+                            </div>
+                        </div>
+                    </a>
+                    <?php
+                }
+            } ?>
+            </div>
         </div>
     </div>
 

@@ -42,7 +42,7 @@ if(isset($_POST['user_update']))
     // $password_hash=crypt($password, $options['salt']);
 
     $query = "UPDATE user SET name='$name',
-    email='$email',mobile_number='$mobile_number',last_update_user_id='$last_update_user_id',last_update_date='$date' 
+    email='$email',mobile_number='$mobile_number',last_update_user_id='$last_update_user_id',last_update_date=now() 
     WHERE user_id='$user_id' ";
     $query_run = mysqli_query($conn, $query);
 
@@ -72,7 +72,7 @@ if(isset($_POST['save_user']))
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $mobile_number = mysqli_real_escape_string($conn, $_POST['mobile_number']);
     $create_user_id=mysqli_real_escape_string($conn,$_SESSION['user_id']);
-    $date=mysqli_real_escape_string($conn,$_POST['date']);
+    // $date=mysqli_real_escape_string($conn,$_POST['date']);
     // $last_update_user_id=$_SESSION['last_update_user_id'];
     $default_password="password@123";
     $hash_password=crypt($default_password, $options['salt']);
@@ -87,7 +87,7 @@ if(isset($_POST['save_user']))
     else
     {   
         $query = "INSERT INTO user (user_identity,user_id,password,name,email,mobile_number,create_user_id,create_date) 
-        VALUES ('$user_identity','$user_id','$hash_password','$name','$email','$mobile_number','$create_user_id','$date')";
+        VALUES ('$user_identity','$user_id','$hash_password','$name','$email','$mobile_number','$create_user_id',now())";
 
         $query_run = mysqli_query($conn, $query);
         if($query_run)

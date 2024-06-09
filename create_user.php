@@ -59,11 +59,6 @@ include 'nav.php';
                                     <input type="text" class="form-control" name="mobile_number" id="mobile"
                                         placeholder="Enter Your Mobile Number." required>
                                 </div>
-                                <div class="col-sm-6 mb-4 form-group">
-                                    <label for="dt">Date</label>
-                                    <input type="date" class="form-control" name="date" id="dt"
-                                        placeholder="Enter Date." required>
-                                </div>
                                 <div class="col-sm-12">
                                     <button type="submit" name="save_user" class="btn btn-primary">Save</button>
                                 </div>

@@ -6,7 +6,7 @@
   <title>Invoice Page Design</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: "Hanken Grotesk", sans-serif;
       margin: 0;
       padding: 0;
       background-color: #f4f4f4;
@@ -84,7 +84,7 @@
       text-align: left;
     }
     .actions button {
-      background-color: #007bff;
+      background-color: #6121ad;
       color: white;
       border: none;
       padding: 5px 10px;

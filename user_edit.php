@@ -49,10 +49,6 @@ include 'nav.php';
                                         <input type="hidden" name="uidentity" value="<?=$user['user_identity'];?>" class="form-control">
                                     </div>
                                     <div class="mb-2">
-                                        <label>User Id</label>
-                                        <input type="text" name="uid" value="<?=$user['user_id'];?>" class="form-control">
-                                    </div>
-                                    <div class="mb-2">
                                         <label>UserName</label>
                                         <input type="text" name="uname" value="<?=$user['name'];?>" class="form-control">
                                     </div>
@@ -63,10 +59,6 @@ include 'nav.php';
                                     <div class="mb-2">
                                         <label>Mobile_Number</label>
                                         <input type="text" name="mobile_number" value="<?=$user['mobile_number'];?>" class="form-control">
-                                    </div>
-                                    <div class="mb-2">
-                                        <label>Date</label>
-                                        <input type="date" name="date" value="<?=$user['create_date'];?>" class="form-control">
                                     </div>
                                     <div class="mb-2">
                                         <button type="submit" name="user_update" class="btn btn-primary">

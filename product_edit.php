@@ -66,10 +66,6 @@ include 'nav.php';
                                         <input type="text" name="uom" value="<?=$product['uom'];?>" class="form-control">
                                     </div>
                                     <div class="mb-2">
-                                        <label>Date</label>
-                                        <input type="date" name="date" value="<?=$product['create_date'];?>" class="form-control">
-                                    </div>
-                                    <div class="mb-2">
                                         <button type="submit" name="product_update" class="btn btn-primary">
                                             Update
                                         </button>

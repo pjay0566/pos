@@ -36,7 +36,7 @@ $result_count = $conn->query($sql_count);
 $total_rows = $result_count->fetch_assoc()['total'];
 $total_pages = ceil($total_rows / $items_per_page);
 
-$sql = "SELECT * FROM product WHERE  CONCAT(product_name,product_description,price,cost) LIKE '%$search_query%' ORDER BY $sort_by $sort_order LIMIT $items_per_page OFFSET $offset";
+$sql = "SELECT product_name FROM product WHERE  CONCAT(product_name,product_description,price,cost) LIKE '%$search_query%' ORDER BY $sort_by $sort_order LIMIT $items_per_page OFFSET $offset";
 $result = $conn->query($sql);
 ?>
 <!doctype html>
@@ -51,7 +51,7 @@ $result = $conn->query($sql);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style_list.css">
-    <title>Product CRUD</title>
+    <title>Product Barcodes</title>
 </head>
 
 <body>
@@ -72,12 +72,7 @@ $result = $conn->query($sql);
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h4>Product Details
-                            <a href="create_product.php" class="btn btn-primary float-end" style="margin-left: 20px;"><i
-                                    class="fa-solid fa-plus"></i> Add Product</a>
-                             <a href="generate_barcode.php" class="btn btn-primary float-end"><i
-                                    class="fa-solid fa-barcode"></i> Generate-Barcode</a>
-                        </h4>
+                        <h4>Product Barcodes</h4>
                     </div>
                     <div class="card-body">
 
@@ -91,21 +86,8 @@ $result = $conn->query($sql);
                                     <th><a
                                             href="?sort_by=product_name&order=<?php echo $new_order; ?>&items_per_page=<?php echo $items_per_page; ?>&page=<?php echo $page; ?>&search_query=<?php echo $search_query; ?>">Product
                                             Name</a></th>
-                                    <th><a
-                                            href="?sort_by=product_description&order=<?php echo $new_order; ?>&items_per_page=<?php echo $items_per_page; ?>&page=<?php echo $page; ?>&search_query=<?php echo $search_query; ?>">Product
-                                            Description</a></th>
-                                    <th style="text-align:right"><a
-                                            href="?sort_by=price&order=<?php echo $new_order; ?>&items_per_page=<?php echo $items_per_page; ?>&page=<?php echo $page; ?>&search_query=<?php echo $search_query; ?>">Price</a>
-                                    </th>
-                                    <th style="text-align:right"><a
-                                            href="?sort_by=cost&order=<?php echo $new_order; ?>&items_per_page=<?php echo $items_per_page; ?>&page=<?php echo $page; ?>&search_query=<?php echo $search_query; ?>">Cost</a>
-                                    </th>
-                                    <th><a
-                                            href="?sort_by=uom&order=<?php echo $new_order; ?>&items_per_page=<?php echo $items_per_page; ?>&page=<?php echo $page; ?>&search_query=<?php echo $search_query; ?>">UOM</a>
-                                    </th>
-                                    <th><a
-                                            href="?sort_by=action&order=<?php echo $new_order; ?>&items_per_page=<?php echo $items_per_page; ?>&page=<?php echo $page; ?>&search_query=<?php echo $search_query; ?>">Action</a>
-                                    </th>
+                                    <th>Barcode</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -115,22 +97,9 @@ $result = $conn->query($sql);
                                         ?>
                                         <tr>
                                             <td><?= $product['product_name']; ?></td>
-                                            <td><?= $product['product_description']; ?></td>
-                                            <td style="text-align:right"><?= $product['price']; ?></td>
-                                            <td style="text-align:right"><?= $product['cost']; ?></td>
-                                            <td><?= $product['uom']; ?></td>
-                                            <td>
-                                                <a href="product_view.php?product_name=<?= $product['product_name']; ?>"
-                                                    class="btn btn-info btn-sm"><i class="fa-solid fa-eye"></i></a>
-                                                <a href="product_edit.php?product_name=<?= $product['product_name']; ?>"
-                                                    class="btn btn-success btn-sm"><i
-                                                        class="fa-regular fa-pen-to-square"></i></a>
-                                                <form action="product_code.php" method="POST" class="d-inline">
-                                                    <button type="submit" name="delete_product"
-                                                        value="<?= $product['product_name']; ?>" class="btn btn-danger btn-sm"><i
-                                                            class="fa-solid fa-trash-can"></i></button>
-                                                </form>
-                                            </td>
+                                            <td class="bar-code">*<?= $product['product_name']; ?>*</td>
+                                            <td>No of Labels: <input type=number value="100" style="width: 50px; margin-right: 20px;" />
+                                            <input type="button" value="Print" onclick="generateBarcodes(this, '*<?= $product['product_name']; ?>*')"></td>
                                         </tr>
                                         <?php
                                     }
@@ -187,6 +156,8 @@ if ($total_pages > 1) {
     </form>
     </div>
     <div style="margin: 40px"></div>
-<?php include 'footer.php'; ?>
-
+    <?php include 'footer.php'; ?>
+    
+    <script src="jquery.js"></script>
+    <script src="script.js"></script>
 </html>

@@ -14,7 +14,7 @@
     <footer class="footer-sticky">
         <div class="footer-container">
             <div class="footer-section">
-                <p>&copy; 2024 POS System</p>
+                <p>&copy; 2024 POS<sup style="font-size: 7px;">beta</sup> System. All Rights Reserved</p>
             </div>
         </div>
     </footer>

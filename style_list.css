@@ -1,3 +1,8 @@
+/* @font-face{
+    font-family: 'Free 3 of 9 Regular';
+    src:url('FREE3OF9.TTF') format('truetype'); 
+} */
+
 a{
     text-decoration: none;
     color: black;
@@ -7,9 +12,12 @@ a:hover{
 }
 .pagination {
     /* position: fixed; */
-    margin-top: 40px;
+    margin-top: 0px;
     /* margin-right: 20px; */
     margin-left: 70px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
 }
 .pagination a {
     margin: 0 5px;
@@ -17,25 +25,54 @@ a:hover{
     border: 1px solid #ccc;
     padding: 5px 10px;
 }
-.pagination a.active {
-    font-weight: bold;
-    background-color: #d3bfdb;
-}
 .pagination set
 {
     margin-right: 50px;
 }
 
 .rounded-button {
-    background-color: rgb(96, 96, 153); 
+    background-color: white;
     border: none;
-    color: white;
-    padding: 15px 32px;
+    color: #6121ad !important;
+    padding: 10px 32px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
+    font-size: 14px;
+    margin: 2px 4px;
     cursor: pointer;
-    border-radius: 12px;
+    border-radius: 5px;
+    user-select: none;
+    font-weight: 700;
+}
+
+.rounded-button.active {
+    background-color: #6121ad;
+    color: white !important;
+}
+
+.bar-code
+{
+    font-family: 'Free 3 of 9';
+    font-size: 42px;
+    font-weight: 400;
+    text-transform: uppercase;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-left {
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.margin-20 { 
+    margin: 20px;
+}
+
+.table td {
+    padding: 2px 10px !important;
 }

@@ -58,24 +58,14 @@ $result = $conn->query($sql);
 
     <div class="container mt-4">
         <center>
-            <form method="GET" action="">
-                <label for="recordsPerPage">Records per page:</label>
-                <select name="items_per_page" id="items_per_page" onchange="this.form.submit()">
-                    <option value="5" <?php if ($items_per_page == 5)
-                        echo 'selected'; ?>>5</option>
-                    <option value="10" <?php if ($items_per_page == 10)
-                        echo 'selected'; ?>>10</option>
-                    <option value="25" <?php if ($items_per_page == 25)
-                        echo 'selected'; ?>>25</option>
-                    <option value="50" <?php if ($items_per_page == 50)
-                        echo 'selected'; ?>>50</option>
-                </select>
-                <!-- <input type="hidden" name="order" value="<?php echo htmlspecialchars($order); ?>"> -->
-                Search :
-                <input type="text" name="search" placeholder="Search User">
-
-                <button type="submit" class="btn btn-primary">Go</button>
-            </form>
+        <form method="GET" action=""
+            style="display: flex; flex-direction: row; justify-content: center; align-items: center; margin-bottom: 20px;">
+            <input type="hidden" name="order" value="<?php echo htmlspecialchars($order); ?>">
+            Search: &nbsp;
+            <input type="text" name="search">
+            <button type="submit" class="btn btn-primary"
+                style="margin-left: 20px; height: 28px; display: flex; justify-content: center; align-items: center;">Go</button>
+        </form>
         </center>
         <?php include ('message.php'); ?>
         <div class="row">
@@ -199,7 +189,7 @@ if ($total_pages > 1) {
     }
     for ($i = 1; $i <= $total_pages; $i++) {
         if ($i == $page) {
-            echo '<a class="rounded-button">' . $i . '</a> ';
+            echo '<a class="rounded-button active">' . $i . '</a> ';
         } else {
             echo '<a class="rounded-button" href="?sort_by=' . $sort_by . '&items_per_page=' . $items_per_page . '&page='. $i.' &search_query='.$search_query.'">' . $i . '</a> ';
         }
@@ -210,7 +200,22 @@ if ($total_pages > 1) {
     echo '<a class="rounded-button" href="?sort_by=' . $sort_by . '&items_per_page=' . $items_per_page . '&page=' . $total_pages . '&search_query=' .$search_query. '">Last</a> ';
 }
 ?>
-    </div>
+    <form method="GET" action="" style="margin-left: 50px;">
+        <label for="recordsPerPage">Show:</label>
+        <select name="items_per_page" id="items_per_page" onchange="this.form.submit()">
+            <option value="5" <?php if ($items_per_page == 5)
+                echo 'selected'; ?>>5</option>
+            <option value="10" <?php if ($items_per_page == 10)
+                echo 'selected'; ?>>10</option>
+            <option value="25" <?php if ($items_per_page == 25)
+                echo 'selected'; ?>>25</option>
+            <option value="50" <?php if ($items_per_page == 50)
+                echo 'selected'; ?>>50</option>
+        </select>
+    </form> 
+</div>
+<div style="margin: 40px"></div>
+    
 <?php include 'footer.php'; ?>
 
 </html>

@@ -176,3 +176,9 @@ body {
 .dropdown-item:hover {
     background-color: #8b8b8b !important;
 }
+
+.nav-links li.active {
+    background-color: #7e4db8 !important;
+    border-radius: 10px;
+    padding: 5px 20px;
+}

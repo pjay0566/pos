@@ -1,6 +1,8 @@
+<?php 
+    $url = str_replace('/pos%20project/', '', $_SERVER['REQUEST_URI']);
+?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,16 +14,15 @@
         rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
     <nav class="navbar">
         <div class="leftnavbar">
             <div class="logo">POS<sup style="font-size: 7px; top: -12px">beta</sup></div>
             <ul class="nav-links">
-                <li><a href="invoice_list.php">Billing</a></li>
-                <li><a href="product_list.php">Products</a></li>
-                <li><a href="coun_main.php">Counter</a></li>
-                <li><a href="user_list.php">Users</a></li>
+                <li class="<?= $url == 'invoice_list.php' ? 'active': '' ?>"><a href="invoice_list.php">Billing</a></li>
+                <li class="<?= $url == 'product_list.php' ? 'active': '' ?>"><a href="product_list.php">Products</a></li>
+                <li class="<?= $url == 'coun_main.php' ? 'active': '' ?>"><a href="coun_main.php">Counter</a></li>
+                <li class="<?= $url == 'user_list.php' ? 'active': '' ?>"><a href="user_list.php">Users</a></li>
             </ul>
         </div>
         <div class="rightnavbar">
